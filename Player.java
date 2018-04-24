@@ -17,4 +17,12 @@ public class Player{
     public callGin(){
     
     }
+
+    private int calculateDeadwood(ArrayList<Card> deadwood){
+        //calculate deadoowd score
+
+        return -1;
+    }
+
+    
 }
