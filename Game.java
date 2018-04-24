@@ -10,7 +10,14 @@ public class Game {
 
     public Game(){
         //TODO
+        this.deck = new Deck();
+        deck.shuffleDeck();
+        this.discard = new Discard();
         //Make the game 
+        System.out.println(deck.getDeck().size());
+
+        this.human = new Player(deck);
+        System.out.println(deck.getDeck().size());
     }
 }
 

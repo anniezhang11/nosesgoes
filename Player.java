@@ -6,15 +6,19 @@ public class Player{
     private int deadwoodScore; 
     private ArrayList<Card> deadwood;
 
-    public Player(){
+    public Player(Deck deck){
         //TODO
+        ArrayList<Card> oldDeck = deck.getDeck();
+        this.hand = new ArrayList<Card>(oldDeck.subList(0,10));
+        oldDeck.removeAll(this.hand);
+        deck.setDeck(oldDeck);
     }
 
-    public knock(){
+    public void knock(){
         //todo
     }
 
-    public callGin(){
+    public void callGin(){
     
     }
 

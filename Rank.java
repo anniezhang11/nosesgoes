@@ -26,4 +26,7 @@ public enum Rank {
     } 
 
     //TODO: methods
+        public String toString() {
+        return Character.toString(symbol);
+    }
 }

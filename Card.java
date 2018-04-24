@@ -8,6 +8,9 @@ public class Card implements Comparable {
     }
 
     //TODO: other methods
+    public String toString() {
+        return rank.toString() + suit.toString();
+    }
 
     @Override
     public boolean equals(Object obj) {
