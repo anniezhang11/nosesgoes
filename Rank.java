@@ -19,14 +19,22 @@ public enum Rank {
     private final char symbol;
 
     Rank(int number, int value, String name, char symbol) {
-    this.number = number;
-    this.value = value;
-    this.name = name;
-    this.symbol = symbol;
+        this.number = number;
+        this.value = value;
+        this.name = name;
+        this.symbol = symbol;
     } 
-
-    //TODO: methods
-        public String toString() {
+    
+    public String toString() {
         return Character.toString(symbol);
+    }
+
+    public static Rank fromString(char s) throws Exception {
+        for (Rank rank : Rank.values()) {
+            if (s == rank.symbol) {
+                return rank;
+            }
+        }
+        throw new Exception("Cannot convert: " + s + " from String to Rank");
     }
 }

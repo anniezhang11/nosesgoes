@@ -17,17 +17,18 @@ public class Deck {
         return cards.stream().map(Object::toString).collect(Collectors.joining(", "));
     }
     
-    public Card getTop(){
-        return cards.get(0);
-    }
+    // bubu's code
+    // public Card getTop(){
+    //     return cards.get(0);
+    // }
     
-    public void setDeck(ArrayList<Card> cards){
-        this.cards = cards;
-    }
+    // public void setDeck(ArrayList<Card> cards){
+    //     this.cards = cards;
+    // }
 
-    public ArrayList<Card> getDeck(){
-        return cards;
-    }
+    // public ArrayList<Card> getDeck(){
+    //     return cards;
+    // }
 
     public Card drawTop(){
         //returns top card
@@ -37,5 +38,9 @@ public class Deck {
     public void shuffleDeck(){
         //shuffle deck
         Collections.shuffle(cards);
+    }
+
+    public int size() {
+        return cards.size();
     }
 }

@@ -14,9 +14,17 @@ public enum Suit {
         this.symbol = symbol;
     } 
 
-    //TODO: methods
     public String toString() {
         return symbol;
+    }
+
+    public static Suit fromString(char s) throws Exception {
+        for (Suit suit : Suit.values()) {
+            if (s == suit.letter) {
+                return suit;
+            }
+        }
+        throw new Exception("Cannot convert: " + s + " from String to Suit");
     }
 
 }
