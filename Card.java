@@ -21,6 +21,14 @@ public class Card implements Comparable {
         return new Card(rank, suit);
     }
 
+    public Rank getRank() {
+        return rank;
+    }
+
+    public Suit getSuit() {
+        return suit;
+    }
+
     @Override
     public boolean equals(Object obj) {
         if (obj == this) {return true;}

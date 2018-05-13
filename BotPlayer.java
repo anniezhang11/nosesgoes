@@ -12,6 +12,6 @@ public class BotPlayer implements Player {
     public Card promptCard(State state) {
         Random random = new Random();
         int choice = random.nextInt(state.getHand().size());
-        return state.getHand().get(choice);
+        return state.getHand().getCards().get(choice);
     }
 }

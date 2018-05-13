@@ -1,17 +1,17 @@
 import java.util.ArrayList;
 
 public class State {
-    private ArrayList<Card> hand;
+    private Hand hand;
     private int deckSize;
     private ArrayList<Card> discard;
 
-    public State(ArrayList<Card> hand, int deckSize, ArrayList<Card> discard) {
+    public State(Hand hand, int deckSize, ArrayList<Card> discard) {
         this.hand = hand;
         this.deckSize = deckSize;
         this.discard = discard;
     }
 
-    public ArrayList<Card> getHand() {
+    public Hand getHand() {
         return hand;
     }
 

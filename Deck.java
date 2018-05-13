@@ -16,19 +16,6 @@ public class Deck {
     public String toString() {
         return cards.stream().map(Object::toString).collect(Collectors.joining(", "));
     }
-    
-    // bubu's code
-    // public Card getTop(){
-    //     return cards.get(0);
-    // }
-    
-    // public void setDeck(ArrayList<Card> cards){
-    //     this.cards = cards;
-    // }
-
-    // public ArrayList<Card> getDeck(){
-    //     return cards;
-    // }
 
     public Card draw(){
         //returns top card

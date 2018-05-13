@@ -6,7 +6,10 @@ public class HumanPlayer implements Player {
 
     @Override
     public Action promptAction(Action[] actions, State state) {
-        System.out.println("Hand: " + state.getHand());
+        System.out.println("Hand: " + state.getHand().getCards());
+        System.out.println("Score: " + state.getHand().score());
+        System.out.println("Unmatched cards: " + state.getHand().getUnmatchedCards());
+        System.out.println("Matched cards: " + state.getHand().getMatchedSets());
         if (state.getDiscard().size() > 0) {
             System.out.println("Discard Pile: " + state.getDiscard().get(0));
         } else {
@@ -43,7 +46,7 @@ public class HumanPlayer implements Player {
     public Card promptCard(State state) {
         Card card = null;
         while (card == null) {
-            System.out.println("Please choose an card: " + state.getHand());
+            System.out.println("Please choose a card: " + state.getHand().getCards());
             Scanner reader = new Scanner(System.in);
 
             String s = reader.next();

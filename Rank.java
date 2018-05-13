@@ -28,6 +28,9 @@ public enum Rank {
     public String toString() {
         return Character.toString(symbol);
     }
+    public int toInt() {
+        return this.number;
+    }
 
     public static Rank fromString(char s) throws Exception {
         for (Rank rank : Rank.values()) {

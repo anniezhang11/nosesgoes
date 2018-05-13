@@ -5,7 +5,7 @@ import java.util.stream.IntStream;
 public class Game {
     private Deck deck;
     private ArrayList<Card> discard;
-    private ArrayList<Card>[] hands;
+    private Hand[] hands;
     public static final int HAND_SIZE = 10;
     private boolean knocked;
     private Player[] players;
@@ -17,16 +17,16 @@ public class Game {
         deck.shuffle();
         knocked = false;
         discard = new ArrayList<>();
-        hands = new CardArrayList[]{new CardArrayList(), new CardArrayList()};
+        hands = new Hand[]{new Hand(), new Hand()};
         players = new Player[]{new HumanPlayer(), new BotPlayer()};
         turn = 0;
 
         IntStream.range(0, HAND_SIZE).forEach(
-                i -> {
-                    for (ArrayList<Card> hand : hands) {
-                        hand.add(deck.draw());
-                    }
+            i -> {
+                for (Hand hand : hands) {
+                    hand.add(deck.draw());
                 }
+            }
         );
 
         discard.add(0, deck.draw());
@@ -35,7 +35,7 @@ public class Game {
     public void run() {
         while (!knocked && deck.size() > 2) {
             Player p = players[turn % players.length];
-            ArrayList<Card> hand = hands[turn % players.length];
+            Hand hand = hands[turn % players.length];
 
             // Draw
             State state = new State(hand, deck.size(), discard);
@@ -45,10 +45,12 @@ public class Game {
                 case DRAW_STOCK:
                     card = deck.draw();
                     hand.add(card);
+                    hand.autoMatch();
                     break;
                 case DRAW_DISCARD:
                     card = discard.remove(0);
                     hand.add(card);
+                    hand.autoMatch();
                     break;
             }
 
@@ -60,6 +62,7 @@ public class Game {
                 case DISCARD:
                     card = p.promptCard(state);
                     hand.remove(card);
+                    hand.autoMatch();
                     discard.add(0, card);
 
                     break;
@@ -76,12 +79,10 @@ public class Game {
         String s = "";
         s += "Deck: " + deck + "\n";
         s += "Discard: " + discard.stream().map(Object::toString).collect(Collectors.joining(", ")) + "\n";
-        for (ArrayList<Card> hand : hands) {
-            s += "Hand: " + hand.stream().map(Object::toString).collect(Collectors.joining(", ")) + "\n";
+        for (Hand hand : hands) {
+            s += "Hand: " + hand.getCards().stream().map(Object::toString).collect(Collectors.joining(" ")) + "\n";
         }
         return s;
     }
 }
-
-class CardArrayList extends ArrayList<Card> { }
 
