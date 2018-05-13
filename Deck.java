@@ -30,12 +30,12 @@ public class Deck {
     //     return cards;
     // }
 
-    public Card drawTop(){
+    public Card draw(){
         //returns top card
         return cards.remove(0);
     }
 
-    public void shuffleDeck(){
+    public void shuffle(){
         //shuffle deck
         Collections.shuffle(cards);
     }

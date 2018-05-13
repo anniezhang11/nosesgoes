@@ -17,7 +17,7 @@ public class Game {
         deck.shuffle();
         knocked = false;
         discard = new ArrayList<>();
-        hands = new ArrayList[]{new ArrayList(), new ArrayList()};
+        hands = new CardArrayList[]{new CardArrayList(), new CardArrayList()};
         players = new Player[]{new HumanPlayer(), new BotPlayer()};
         turn = 0;
 
@@ -82,4 +82,6 @@ public class Game {
         return s;
     }
 }
+
+class CardArrayList extends ArrayList<Card> { }
 
