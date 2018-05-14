@@ -45,10 +45,11 @@ public class CardSet implements ICardSet, Serializable
 	public boolean isGroup()
 	{
         System.out.println("poss " + aCards.toString());
-		if (aCards.size() != 3 || aCards.size() != 4)
+		if (aCards.size() < 3)
 		{
+			System.out.println("too short to be a set " + aCards.size());
 			return false;
-		} //Need to have three or more cards
+		} //Need to have three or four cards
 		
 		ArrayList<Card> aList = new ArrayList<Card>(aCards);
 		
@@ -80,6 +81,7 @@ public class CardSet implements ICardSet, Serializable
 	{
 		if (aCards.size() < 3) 
 		{
+			System.out.println("too short to be a run " + aCards.size());
 			return false;
 		} //Need to have three or more cards
 		

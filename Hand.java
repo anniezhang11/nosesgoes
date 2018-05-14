@@ -14,7 +14,7 @@ public class Hand implements Serializable
 	private ArrayList<Card> aCards;
 	private ArrayList<Card> aUnmatched;
 	private ArrayList<ICardSet> aRuns;
-	private ArrayList<ICardSet> aGroups;
+	private ArrayList<ICardSet> aSets;
 	
 	/**
 	 * Creates a new, empty hand.
@@ -24,7 +24,7 @@ public class Hand implements Serializable
 		aCards = new ArrayList<Card>();
 		aUnmatched = new ArrayList<Card>();
 		aRuns = new ArrayList<ICardSet>();
-		aGroups = new ArrayList<ICardSet>();
+		aSets = new ArrayList<ICardSet>();
 	}
 	
 	/**
@@ -65,18 +65,18 @@ public class Hand implements Serializable
 			aRuns.remove(run);
 		}
 		
-		// Remove any groups containing the card to remove.
-		ArrayList<ICardSet> groupsToRemove = new ArrayList<ICardSet>();
-		for (ICardSet group : aGroups) 
+		// Remove any sets containing the card to remove.
+		ArrayList<ICardSet> setsToRemove = new ArrayList<ICardSet>();
+		for (ICardSet group : aSets) 
 		{
 			if (group.contains(pCard))
 			{
-				groupsToRemove.add(group);
+				setsToRemove.add(group);
 			}
 		}
-		for (ICardSet group : groupsToRemove)
+		for (ICardSet group : setsToRemove)
 		{
-			aGroups.remove(group);
+			aSets.remove(group);
         }
 
 	}
@@ -101,15 +101,15 @@ public class Hand implements Serializable
 		aCards = new ArrayList<Card>();
 		aUnmatched = new ArrayList<Card>();
 		aRuns = new ArrayList<ICardSet>();
-		aGroups = new ArrayList<ICardSet>();
+		aSets = new ArrayList<ICardSet>();
     }
     
     public ArrayList<ICardSet> getRuns() {
         return aRuns;
     }
 
-    public ArrayList<ICardSet> getGroups() {
-        return aGroups;
+    public ArrayList<ICardSet> getSets() {
+        return aSets;
     }
 
     public ArrayList<Card> getUnmatched() {
@@ -121,7 +121,7 @@ public class Hand implements Serializable
 	 */
 	public Set<ICardSet> getMatchedSets()
 	{
-		HashSet<ICardSet> matched = new HashSet<ICardSet>(aGroups);
+		HashSet<ICardSet> matched = new HashSet<ICardSet>(aSets);
 		matched.addAll(aRuns);
 		return matched;
 	}
@@ -174,18 +174,18 @@ public class Hand implements Serializable
 	
 	
 	/**
-	 * Calculates the matching of cards into groups and runs that
+	 * Calculates the matching of cards into sets and runs that
 	 * results in the lowest amount of points for unmatched cards.
 	 */
 	public void autoMatch()
 	{
 		HashSet<CardSet> sets = new HashSet<CardSet>();
 		
-		// TODO: current implementation just makes groups
+		// TODO: current implementation just makes sets
 		
 		// all cards are considered unmatched
 		aRuns = new ArrayList<ICardSet>();
-		aGroups = new ArrayList<ICardSet>();
+		aSets = new ArrayList<ICardSet>();
 		
 		// copy the cards to the unmatched card set
 		aUnmatched = new ArrayList<Card>();
@@ -199,51 +199,95 @@ public class Hand implements Serializable
         Collections.sort(aUnmatched);
         // System.out.println("aUnMatched pre: " + aUnmatched.toString());
 		
-		// Make groups by starting at a card and checking at most the next 4
+		// Make groups by starting at a card
 		for(int i = 0; i < aCards.size() - 1; i++)
 		{
-			HashSet<Card> possibleGroup = new HashSet<Card>();
-			possibleGroup.add(aCards.get(i));
+			HashSet<Card> possibleSet = new HashSet<Card>();
+			HashSet<Card> possibleRun = new HashSet<Card>();
+			possibleSet.add(aCards.get(i));
+			possibleRun.add(aCards.get(i));
             Rank groupRank = aCards.get(i).getRank();
             Suit groupSuit = aCards.get(i).getSuit();
-            int possibleGroupCount = 0;
-			// System.out.println("Possible group: " + possibleGroup.toString());
+            int maxRank = groupRank.toInt() + 1;
+
 			for(int j = i + 1; j < aCards.size(); j++)
 			{
-				// if the rank of the next card is the same as the rank of the group,
-                // add it to the group and remove it from the unmatched cards
-                Rank currentRank = aCards.get(j).getRank();
+				Rank currentRank = aCards.get(j).getRank();
                 Suit currentSuit = aCards.get(j).getSuit();
-                if(currentRank == groupRank)
-                {
-                    possibleGroup.add(aCards.get(j));
+                
+				// if this rank is the same as groupRank, add it to possible Set
+                if (currentRank == groupRank)
+                {	
+                	possibleSet.add(aCards.get(j));
                     aUnmatched.remove(aCards.get(j));
-                    possibleGroupCount += 1;
                     // System.out.println("aUnmatched removed: " + aUnmatched.toString());
-                } else if (possibleGroupCount ==0 && currentSuit == groupSuit && (currentRank.toInt() - aCards.get(j-1).getRank().toInt() == 1)) {
-                    possibleGroup.add(aCards.get(j));
-                    aUnmatched.remove(aCards.get(j));
                 }
+                
+				// if this suit is the same as groupSuit, add it to possible Run
+                if (currentSuit == groupSuit && currentRank.toInt() == maxRank)
+                {	
+                	maxRank++;
+                	possibleRun.add(aCards.get(j));
+                    aUnmatched.remove(aCards.get(j));
+                    // System.out.println("aUnmatched removed: " + aUnmatched.toString());
+                }
+                
 			}
-			System.out.println("possibleGroup: " + possibleGroup.toString());
-			// if it's a group, add it to the set of all groups
-            CardSet possibleSet = new CardSet(possibleGroup);
-            System.out.println("is group: " + possibleSet.isGroup());
-            System.out.println("is run: " + possibleSet.isRun());
+			System.out.println("possibleSet: " + possibleSet.toString());
+			System.out.println("possibleRun: " + possibleRun.toString());
+			
+            CardSet possibleCardSet = new CardSet(possibleSet);
+            CardSet possibleCardRun = new CardSet(possibleRun);
             
-			if(possibleSet.isGroup() || possibleSet.isRun())
-			{
-				aGroups.add(possibleSet);
-            } 
-            else if (possibleSet.size() > 1) {
-                possibleSet.remove(aCards.get(i));
-                for (Card c : possibleSet) {
+            boolean issetbool = possibleCardSet.isGroup();
+            boolean isrunbool = possibleCardRun.isRun();
+            
+            System.out.println("is set: " + issetbool);
+            System.out.println("is run: " + isrunbool);
+            
+            //TODO: the following should account for group:run 00, 01, 10, and 11
+            
+            //00 do nothing
+            //01 add subset with the same suit
+            //10 add subset with the same rank
+            //11 check whether the run value or group value is higher
+            
+            if (!issetbool && !isrunbool) {
+				//re-add cards from both failed meld attempts
+				for (Card c : possibleCardRun) {
+                    // System.out.println("adding card: " + c.toString());
+                    aUnmatched.add(c);
+                }
+				for (Card c : possibleCardSet) {
+                    // System.out.println("adding card: " + c.toString());
+                    aUnmatched.add(c);
+                }
+            } else if (issetbool && !isrunbool) {
+				aSets.add(possibleCardSet);
+				//re-add cards from other failed meld attempt
+				for (Card c : possibleCardRun) {
+                    // System.out.println("adding card: " + c.toString());
+                    aUnmatched.add(c);
+                }
+            } else if (!issetbool && isrunbool) {
+				aRuns.add(possibleCardRun);
+				//re-add cards from other failed meld attempt
+				for (Card c : possibleCardSet) {
+                    // System.out.println("adding card: " + c.toString());
+                    aUnmatched.add(c);
+                }
+            } else if (issetbool && isrunbool) {
+            	// TODO: check the values of the two and pick the higher one
+            	aSets.add(possibleCardSet);
+            	//re-add cards from other failed meld attempt
+            	for (Card c : possibleCardRun) {
                     // System.out.println("adding card: " + c.toString());
                     aUnmatched.add(c);
                 }
             }
+            
         }
-        // System.out.println("aUnmatched post: " + aUnmatched.toString());
+//         System.out.println("aUnmatched post: " + aUnmatched.toString());
 
 	}
 	
