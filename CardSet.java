@@ -79,8 +79,7 @@ public class CardSet implements ICardSet, Serializable
 	@Override
 	public boolean isRun()
 	{
-		if (aCards.size() < 3) 
-		{
+		if (aCards.size() < 3) {
 			System.out.println("too short to be a run " + aCards.size());
 			return false;
 		} //Need to have three or more cards
@@ -104,27 +103,21 @@ public class CardSet implements ICardSet, Serializable
 			};
         });
         System.out.println("sorted: " + aList.toString());
+        
+        Rank groupRank = aList.get(0).getRank();
+        System.out.println("grouprank: " + groupRank);
+        int maxRank = groupRank.toInt() + 1;
 		
-		Suit suit = null;
-		Rank prevRank = null; //Loop through cards, check if each is 1 more than previous
-		for(Card c1 : aList) 
-		{
-			if (suit == null) 
-			{
-				suit = c1.getSuit(); 
-			}
-			if(prevRank == null) 
-			{ 
-				prevRank = c1.getRank(); 
-			} //set the first one, then check each after
-			else if( (prevRank.toInt() != (c1.getRank().toInt() + 1)) || suit != c1.getSuit()) 
-			{
-				return false;
-            }
-            System.out.println("prevrank: " + prevRank);
-            prevRank = c1.getRank();
-            System.out.println("thisrank: " + prevRank);
+		for(int i = 1; i < aList.size() - 1; i++) {
+			System.out.println("maxrank: " + maxRank);
+			Rank currentRank = aList.get(i).getRank();
+            System.out.println("thisrank: " + currentRank);
             
+            if (currentRank.toInt() == maxRank) {	
+            	maxRank++;
+            } else {
+            	return false;
+            }
 		}
 		return true; //there are >=3 and in order they are consecutive
 	}

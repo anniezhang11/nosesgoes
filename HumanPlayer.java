@@ -8,8 +8,8 @@ public class HumanPlayer implements Player {
     public Action promptAction(Action[] actions, State state) {
         System.out.println("Hand: " + state.getHand().getCards());
         System.out.println("Score: " + state.getHand().score());
-        System.out.println("Unmatched cards: " + state.getHand().getUnmatchedCards());
-        System.out.println("Matched cards: " + state.getHand().getMatchedSets());
+        System.out.println("Unmatched cards: " + state.getHand().getUnmatched());
+        System.out.println("Matched cards: " + state.getHand().getMatchedCards());
         if (state.getDiscard().size() > 0) {
             System.out.println("Discard Pile: " + state.getDiscard().get(0));
         } else {

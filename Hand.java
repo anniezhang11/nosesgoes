@@ -1,6 +1,8 @@
 import java.io.Serializable;
 import java.util.*;
 
+import javax.smartcardio.Card;
+
 /**
  * Models a hand of 10 cards. The hand is not sorted. Not threadsafe.
  * The hand is a set: adding the same card twice will not add duplicates
@@ -113,6 +115,7 @@ public class Hand implements Serializable
     }
 
     public ArrayList<Card> getUnmatched() {
+    	Collections.sort(aUnmatched);
         return aUnmatched;
     }
 	
@@ -131,8 +134,25 @@ public class Hand implements Serializable
 	 */
 	public Set<Card> getUnmatchedCards()
 	{
+		Collections.sort(aUnmatched);
 		return new HashSet<Card>(aUnmatched);
 	}
+	
+	/**
+	 * @return A copy of the set of sets of matched cards.
+	 */
+	public ArrayList<Card> getMatchedCards() {
+        ArrayList<Card> cards = new ArrayList<Card>();
+        Set<ICardSet> allSets = getMatchedSets();
+        for (ICardSet s : allSets) {
+            Iterator<Card> iter = s.iterator();
+            while (iter.hasNext()) {
+                Card thisCard = iter.next();
+                cards.add(thisCard);
+            }
+        }
+        return cards;
+    }
 	
 	/**
 	 * @return The number of cards in the hand.
@@ -200,36 +220,39 @@ public class Hand implements Serializable
         // System.out.println("aUnMatched pre: " + aUnmatched.toString());
 		
 		// Make groups by starting at a card
-		for(int i = 0; i < aCards.size() - 1; i++)
+		for(int i = aCards.size() - 1; i >= 1; i--)
 		{
+			//TODO: if card already in a meld, it cannot be used in another meld
+			Card groupCard = aCards.get(i);
+//			boolean mybool = aUnmatched.contains(groupCard); //this doesnt work for some unknown reason
+			
 			HashSet<Card> possibleSet = new HashSet<Card>();
 			HashSet<Card> possibleRun = new HashSet<Card>();
-			possibleSet.add(aCards.get(i));
-			possibleRun.add(aCards.get(i));
-            Rank groupRank = aCards.get(i).getRank();
-            Suit groupSuit = aCards.get(i).getSuit();
-            int maxRank = groupRank.toInt() + 1;
+			possibleSet.add(groupCard);
+			possibleRun.add(groupCard);
+            Rank groupRank = groupCard.getRank();
+            Suit groupSuit = groupCard.getSuit();
+            int minRank = groupRank.toInt() - 1;
 
-			for(int j = i + 1; j < aCards.size(); j++)
+			for(int j = i - 1; j >= 0; j--)
 			{
-				Rank currentRank = aCards.get(j).getRank();
-                Suit currentSuit = aCards.get(j).getSuit();
+				Card currentCard = aCards.get(j);
+				Rank currentRank = currentCard.getRank();
+                Suit currentSuit = currentCard.getSuit();
                 
 				// if this rank is the same as groupRank, add it to possible Set
                 if (currentRank == groupRank)
                 {	
-                	possibleSet.add(aCards.get(j));
-                    aUnmatched.remove(aCards.get(j));
-                    // System.out.println("aUnmatched removed: " + aUnmatched.toString());
+                	possibleSet.add(currentCard);
+                    System.out.println("aUnmatched removed: " + aUnmatched.toString());
                 }
                 
-				// if this suit is the same as groupSuit, add it to possible Run
-                if (currentSuit == groupSuit && currentRank.toInt() == maxRank)
+				// if this suit is the same as groupSuit and is consecutive add it to possible Run
+                if (currentSuit == groupSuit && currentRank.toInt() == minRank)
                 {	
-                	maxRank++;
-                	possibleRun.add(aCards.get(j));
-                    aUnmatched.remove(aCards.get(j));
-                    // System.out.println("aUnmatched removed: " + aUnmatched.toString());
+                	minRank--;
+                	possibleRun.add(currentCard);
+                    System.out.println("aUnmatched removed: " + aUnmatched.toString());
                 }
                 
 			}
@@ -253,41 +276,38 @@ public class Hand implements Serializable
             //11 check whether the run value or group value is higher
             
             if (!issetbool && !isrunbool) {
-				//re-add cards from both failed meld attempts
-				for (Card c : possibleCardRun) {
-                    // System.out.println("adding card: " + c.toString());
-                    aUnmatched.add(c);
-                }
-				for (Card c : possibleCardSet) {
-                    // System.out.println("adding card: " + c.toString());
-                    aUnmatched.add(c);
-                }
+
+
             } else if (issetbool && !isrunbool) {
 				aSets.add(possibleCardSet);
-				//re-add cards from other failed meld attempt
-				for (Card c : possibleCardRun) {
-                    // System.out.println("adding card: " + c.toString());
-                    aUnmatched.add(c);
+				for (Card c : possibleCardSet) {
+                    System.out.println("adding card to matched: " + c.toString());
+                    aUnmatched.remove(c);
                 }
             } else if (!issetbool && isrunbool) {
 				aRuns.add(possibleCardRun);
-				//re-add cards from other failed meld attempt
-				for (Card c : possibleCardSet) {
-                    // System.out.println("adding card: " + c.toString());
-                    aUnmatched.add(c);
+				for (Card c : possibleCardRun) {
+                    System.out.println("adding card to matched: " + c.toString());
+                    aUnmatched.remove(c);
                 }
             } else if (issetbool && isrunbool) {
-            	// TODO: check the values of the two and pick the higher one
-            	aSets.add(possibleCardSet);
-            	//re-add cards from other failed meld attempt
-            	for (Card c : possibleCardRun) {
-                    // System.out.println("adding card: " + c.toString());
-                    aUnmatched.add(c);
+            	aSets.add(possibleCardSet); 	
+				for (Card c : possibleCardRun) {
+                    System.out.println("adding card to matched: " + c.toString());
+                    aUnmatched.remove(c);
+                }
+				for (Card c : possibleCardSet) {
+                    System.out.println("adding card to matched: " + c.toString());
+                    aUnmatched.remove(c);
                 }
             }
+          
+            System.out.println("aUnmatched post: " + aUnmatched.toString());
             
         }
-//         System.out.println("aUnmatched post: " + aUnmatched.toString());
+  
+//		System.out.println("aUnmatched post: " + aUnmatched.toString());
+		Collections.sort(aUnmatched);
 
 	}
 	
@@ -298,6 +318,7 @@ public class Hand implements Serializable
 	public ArrayList<Card> getCards()
 	{
 		ArrayList<Card> ret = new ArrayList<Card>();
+		Collections.sort(aCards);
 		for(Card c : aCards)
 		{
 			ret.add(c);
